@@ -80,13 +80,12 @@ resource "null_resource" "apply_configmap_auth" {
   count = var.enabled && var.apply_config_map_aws_auth ? 1 : 0
 
   triggers = {
-    cluster_updated                     = join("", aws_eks_cluster.default.*.id)
-    worker_roles_updated                = local.map_worker_roles_yaml
-    additional_roles_updated            = local.map_additional_iam_roles_yaml
-    additional_users_updated            = local.map_additional_iam_users_yaml
-    additional_aws_accounts_updated     = local.map_additional_aws_accounts_yaml
-    configmap_auth_file_content_changed = join("", local_file.configmap_auth.*.content)
-    configmap_auth_file_id_changed      = join("", local_file.configmap_auth.*.id)
+    cluster_updated                      = join("", aws_eks_cluster.default.*.id)
+    worker_roles_updated                 = local.map_worker_roles_yaml
+    additional_roles_updated             = local.map_additional_iam_roles_yaml
+    additional_users_updated             = local.map_additional_iam_users_yaml
+    additional_aws_accounts_updated      = local.map_additional_aws_accounts_yaml
+    configmap_auth_template_file_changed = join("", data.template_file.configmap_auth.*.rendered)
   }
 
   depends_on = [aws_eks_cluster.default, local_file.configmap_auth]
