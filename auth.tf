@@ -103,7 +103,7 @@ resource "null_resource" "apply_configmap_auth" {
           mkdir -p ${local.external_packages_install_path}
           cd ${local.external_packages_install_path}
           curl -LO https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
-          unzip ./awscli-bundle.zip
+          unzip -o ./awscli-bundle.zip
           ./awscli-bundle/install -i ${local.external_packages_install_path}
           export PATH=$PATH:${local.external_packages_install_path}:${local.external_packages_install_path}/bin
           echo 'Installed AWS CLI'
