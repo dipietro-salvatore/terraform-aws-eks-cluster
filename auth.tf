@@ -154,9 +154,12 @@ resource "null_resource" "apply_configmap_auth" {
         set_bash_profile_test=${var.set_bash_profile_test}
         if [[ "$set_bash_profile_test" = true ]] ; then
           echo 'Test Bash shell configuration with: kubectl get nodes'
+          bash
           kubectl get nodes
         fi
       fi
+
+cat ~/.profile
     EOT
   }
 }
