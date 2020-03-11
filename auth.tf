@@ -142,6 +142,11 @@ resource "null_resource" "apply_configmap_auth" {
       kubectl version --kubeconfig ${var.kubeconfig_path}
       kubectl apply -f ${local.configmap_auth_file} --kubeconfig ${var.kubeconfig_path}
       echo 'Applied Auth ConfigMap with kubectl'
+
+      pwd
+      ls -la /home/terraform/.kube
+      ls -al ~
+      cat ~/.profile
     EOT
   }
 }
