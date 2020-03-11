@@ -197,6 +197,18 @@ variable "install_kubectl" {
   description = "Set to `true` to install `kubectl` if the module is provisioned on workstations where `kubectl` is not installed by default, e.g. Terraform Cloud workers"
 }
 
+variable "set_bash_profile" {
+  type        = bool
+  default     = false
+  description = "Set to `true` to set bash for `kubectl` and use it later in the scripts"
+}
+
+variable "set_bash_profile_test" {
+  type        = bool
+  default     = true
+  description = "If set to `true`, it tests the `kubectl` configuration running `kubectl get nodes`"
+}
+
 variable "kubectl_version" {
   type        = string
   default     = ""
