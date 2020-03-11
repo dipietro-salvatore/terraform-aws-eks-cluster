@@ -106,7 +106,7 @@ resource "null_resource" "apply_configmap_auth" {
           unzip -o ./awscli-bundle.zip
           ./awscli-bundle/install -i ${local.external_packages_install_path}
           export PATH=$PATH:${local.external_packages_install_path}:${local.external_packages_install_path}/bin
-          echo "export PATH=$PATH:${local.external_packages_install_path}:${local.external_packages_install_path}/bin" >> ~/.profile
+          echo "PATH=${local.external_packages_install_path}:${local.external_packages_install_path}/bin:$PATH" >> ~/.profile
           echo 'Installed AWS CLI'
           which aws
           aws --version
@@ -120,6 +120,7 @@ resource "null_resource" "apply_configmap_auth" {
           curl -LO https://storage.googleapis.com/kubernetes-release/release/${local.kubectl_version}/bin/linux/amd64/kubectl
           chmod +x ./kubectl
           export PATH=$PATH:${local.external_packages_install_path}
+          echo "PATH=${local.external_packages_install_path}:$PATH" >> ~/.profile
           echo 'Installed kubectl'
           which kubectl
       fi
@@ -133,6 +134,7 @@ resource "null_resource" "apply_configmap_auth" {
         curl -L https://github.com/stedolan/jq/releases/download/jq-${var.jq_version}/jq-linux64 -o jq
         chmod +x ./jq
         source <(aws --output json sts assume-role --role-arn "$aws_cli_assume_role_arn" --role-session-name "$aws_cli_assume_role_session_name"  | jq -r  '.Credentials | @sh "export AWS_SESSION_TOKEN=\(.SessionToken)\nexport AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey) "')
+        echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \n AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \n AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> ~/.profile
         echo 'Assumed role ${var.aws_cli_assume_role_arn}'
       fi
 
@@ -143,10 +145,13 @@ resource "null_resource" "apply_configmap_auth" {
       kubectl apply -f ${local.configmap_auth_file} --kubeconfig ${var.kubeconfig_path}
       echo 'Applied Auth ConfigMap with kubectl'
 
+      
       pwd
       ls -la /home/terraform/.kube
       ls -al ~
       cat ~/.profile
+      env
+      echo  kubectl apply -f ${local.configmap_auth_file} --kubeconfig ${var.kubeconfig_path}
     EOT
   }
 }
