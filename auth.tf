@@ -106,6 +106,10 @@ resource "null_resource" "apply_configmap_auth" {
           unzip -o ./awscli-bundle.zip
           ./awscli-bundle/install -i ${local.external_packages_install_path}
           export PATH=$PATH:${local.external_packages_install_path}:${local.external_packages_install_path}/bin
+          pwd
+          ls -al ~/
+          echo "root"
+          ls -al /
           echo 'Installed AWS CLI'
           which aws
           aws --version
