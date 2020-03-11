@@ -147,12 +147,12 @@ resource "null_resource" "apply_configmap_auth" {
 
 
       set_bash_profile=${var.set_bash_profile}
-      if [[ -n "$set_bash_profile" = true ]] ; then
+      if [[ "$set_bash_profile" = true ]] ; then
         echo 'Set Bash shell ...'
         echo 'PATH=${local.external_packages_install_path}:${local.external_packages_install_path}/bin:$PATH' >> $HOME/.profile
         source $HOME/.profile
         set_bash_profile_test=${var.set_bash_profile_test}
-        if [[ -n "$set_bash_profile_test" = true ]] ; then
+        if [[ "$set_bash_profile_test" = true ]] ; then
           echo 'Test Bash shell configuration with: kubectl get nodes'
           kubectl get nodes
         fi
