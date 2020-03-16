@@ -97,6 +97,12 @@ resource "null_resource" "apply_configmap_auth" {
     command = <<EOT
       set -e
 
+      ${var.install_pre_exec}
+      #install_pre_exec=${var.install_pre_exec}
+      #if [ ! -z install_pre_exec ]; then
+      #  install_pre_exec
+      #fi
+
       install_aws_cli=${var.install_aws_cli}
       if [[ "$install_aws_cli" = true ]] ; then
           echo 'Installing AWS CLI...'
@@ -106,7 +112,6 @@ resource "null_resource" "apply_configmap_auth" {
           unzip -o ./awscli-bundle.zip
           ./awscli-bundle/install -i ${local.external_packages_install_path}
           export PATH=$PATH:${local.external_packages_install_path}:${local.external_packages_install_path}/bin
-          echo "PATH=${local.external_packages_install_path}:${local.external_packages_install_path}/bin:$PATH" >> ~/.profile
           echo 'Installed AWS CLI'
           which aws
           aws --version
@@ -120,7 +125,6 @@ resource "null_resource" "apply_configmap_auth" {
           curl -LO https://storage.googleapis.com/kubernetes-release/release/${local.kubectl_version}/bin/linux/amd64/kubectl
           chmod +x ./kubectl
           export PATH=$PATH:${local.external_packages_install_path}
-          echo "PATH=${local.external_packages_install_path}:$PATH" >> ~/.profile
           echo 'Installed kubectl'
           which kubectl
       fi
@@ -134,7 +138,6 @@ resource "null_resource" "apply_configmap_auth" {
         curl -L https://github.com/stedolan/jq/releases/download/jq-${var.jq_version}/jq-linux64 -o jq
         chmod +x ./jq
         source <(aws --output json sts assume-role --role-arn "$aws_cli_assume_role_arn" --role-session-name "$aws_cli_assume_role_session_name"  | jq -r  '.Credentials | @sh "export AWS_SESSION_TOKEN=\(.SessionToken)\nexport AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey) "')
-        echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \n AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \n AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> ~/.profile
         echo 'Assumed role ${var.aws_cli_assume_role_arn}'
       fi
 
@@ -144,22 +147,6 @@ resource "null_resource" "apply_configmap_auth" {
       kubectl version --kubeconfig ${var.kubeconfig_path}
       kubectl apply -f ${local.configmap_auth_file} --kubeconfig ${var.kubeconfig_path}
       echo 'Applied Auth ConfigMap with kubectl'
-
-
-      set_bash_profile=${var.set_bash_profile}
-      if [[ "$set_bash_profile" = true ]] ; then
-        echo 'Set Bash shell ...'
-        echo 'PATH=${local.external_packages_install_path}:${local.external_packages_install_path}/bin:$PATH' >> $HOME/.profile
-        source $HOME/.profile
-        set_bash_profile_test=${var.set_bash_profile_test}
-        if [[ "$set_bash_profile_test" = true ]] ; then
-          echo 'Test Bash shell configuration with: kubectl get nodes'
-          bash
-          kubectl get nodes
-        fi
-      fi
-
-cat ~/.profile
     EOT
   }
 }

@@ -185,6 +185,12 @@ variable "configmap_auth_file" {
   description = "Path to `configmap_auth_file`"
 }
 
+variable "install_pre_exec" {
+  type        = string
+  default     = ""
+  description = "Commands to execute before run the script."
+}
+
 variable "install_aws_cli" {
   type        = bool
   default     = false
@@ -195,18 +201,6 @@ variable "install_kubectl" {
   type        = bool
   default     = false
   description = "Set to `true` to install `kubectl` if the module is provisioned on workstations where `kubectl` is not installed by default, e.g. Terraform Cloud workers"
-}
-
-variable "set_bash_profile" {
-  type        = bool
-  default     = false
-  description = "Set to `true` to set bash for `kubectl` and use it later in the scripts"
-}
-
-variable "set_bash_profile_test" {
-  type        = bool
-  default     = true
-  description = "If set to `true`, it tests the `kubectl` configuration running `kubectl get nodes`"
 }
 
 variable "kubectl_version" {
