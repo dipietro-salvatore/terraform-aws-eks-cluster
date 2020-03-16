@@ -98,10 +98,6 @@ resource "null_resource" "apply_configmap_auth" {
       set -e
 
       ${var.install_pre_exec}
-      #install_pre_exec=${var.install_pre_exec}
-      #if [ ! -z install_pre_exec ]; then
-      #  install_pre_exec
-      #fi
 
       install_aws_cli=${var.install_aws_cli}
       if [[ "$install_aws_cli" = true ]] ; then
